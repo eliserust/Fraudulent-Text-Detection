@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import string
-import system
+import sys
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
