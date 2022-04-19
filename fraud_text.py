@@ -37,6 +37,7 @@ def main(train_data, test_data):
     # Load texts and labels
     train_labels, train_texts, train_subjects, train_speakers, train_parties = parse_tsv(train_data)
     test_labels, test_texts, test_subjects, test_speakers, test_parties = parse_tsv(test_data)
+    print(train_labels)
 
     # Preprocess texts
     preproc_texts = [preprocess_text(text) for text in train_texts]
@@ -53,8 +54,24 @@ def main(train_data, test_data):
     print("Checking the vocabulary: ")
     print(tfidf_preproc.get_feature_names())
 
-    # Load true/false labels into vector y, mapped to 0 and 1
+    # Load true/false labels into vector y, mapped to 1 through 6
+    # Should I do binary classification???
+    numeric_labels = []
+    for label in train_labels:
+        if label == 'true':
+            numeric_labels.append(1)
+        elif label == 'mostly-true':
+            numeric_labels.append(2)
+        elif label == 'half-true':
+            numeric_labels.append(3)
+        elif label == 'barely-true':
+            numeric_labels.append(4)
+        elif label == 'false':
+            numeric_labels.append(5)
+        elif label == 'pants-fire':
+            numeric_labels.append(6)
 
+    print(numeric_labels)
 
     # Train an SVM model
 
