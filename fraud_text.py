@@ -10,6 +10,9 @@ from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.stats import pearsonr
 from Parsing import parse_tsv
+import warnings
+
+warnings.filterwarnings("ignore") # ignore warnings
 
 # Text pre-processing
 def preprocess_text(text):
@@ -36,19 +39,22 @@ def main(train_data, test_data):
     test_labels, test_texts, test_subjects, test_speakers, test_parties = parse_tsv(test_data)
 
     # Preprocess texts
-    #preproc_texts = [preprocess_text(text) for text in train_texts]
+    preproc_texts = [preprocess_text(text) for text in train_texts]
 
     # Build TFIDF vector feature matrix and fit to data
-    train_texts = list(train_texts)
-    #print(train_texts)
-    #sys.exit()
-
     vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True, min_df = 10)
     tfidf_vector = vectorizer.fit(train_texts)
     print("Checking the vocabulary: ")
     print(tfidf_vector.get_feature_names())
 
+    preproc_vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True,
+                                         min_df = 10, token_pattern = "\S+")
+    tfidf_preproc = preproc_vectorizer.fit(preproc_texts)
+    print("Checking the vocabulary: ")
+    print(tfidf_preproc.get_feature_names())
+
     # Load true/false labels into vector y, mapped to 0 and 1
+
 
     # Train an SVM model
 
