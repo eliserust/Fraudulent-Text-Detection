@@ -40,22 +40,29 @@ def main(train_data, test_data):
     # Load texts and labels
     train_labels, train_texts, train_subjects, train_speakers, train_parties = parse_tsv(train_data)
     test_labels, test_texts, test_subjects, test_speakers, test_parties = parse_tsv(test_data)
-    print(train_labels)
+    #print(train_labels)
 
     # Preprocess texts
     preproc_texts = [preprocess_text(text) for text in train_texts]
 
     # Build TFIDF vector feature matrix and fit to data
     vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True, min_df = 10)
-    tfidf_vector = vectorizer.fit(train_texts)
-    print("Checking the vocabulary: ")
-    print(tfidf_vector.get_feature_names())
+    tfidf_vector = vectorizer.fit_transform(train_texts) # Prof Liz says never to .fit_transform not sure what the workaround is
+    train_df = pd.DataFrame(tfidf_vector.toarray(), columns=vectorizer.get_feature_names())
+    #print(train_df)
+    # Remove number columns??
 
+    # TFIDF vector feature matrix for preprocessed data
     preproc_vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True,
                                          min_df = 10, token_pattern = "\S+")
-    tfidf_preproc = preproc_vectorizer.fit(preproc_texts)
-    print("Checking the vocabulary: ")
-    print(tfidf_preproc.get_feature_names())
+    tfidf_preproc = preproc_vectorizer.fit_transform(preproc_texts)
+    preproc_train_df = pd.DataFrame(tfidf_preproc.toarray(), columns=preproc_vectorizer.get_feature_names())
+    #print(preproc_train_df)
+
+    # TFIDF vector feature matrix for test data
+    test_vector = vectorizer.fit_transform(test_texts)  # Prof Liz says never to .fit_transform not sure what the workaround is
+    test_df = pd.DataFrame(test_vector.toarray(), columns=vectorizer.get_feature_names())
+    #print(test_df)
 
     # Load true/false labels into vector y, mapped to 1, 0 for binary classification
     binary_labels = []
@@ -93,19 +100,20 @@ def main(train_data, test_data):
 
     # Train an SVM model - linear kernel
     SVM_Model = LinearSVC(C=1)  # Initialize SVM
-    SVM_Model.fit(TrainDF1, Train1Labels)  # Train SVM with Training Data
+    SVM_Model.fit(train_df, train_labels)  # Train SVM with Training Data
 
     # Results
-    print("SVM prediction:\n", SVM_Model.predict(TestDF1))
+    print("SVM prediction:\n", SVM_Model.predict(test_df))
     print("Actual:")
-    print(Test1Labels)
+    print(test_labels)
 
     # Confusion Matrix
-    SVM_matrix = confusion_matrix(Test1Labels, SVM_Model.predict(TestDF1))
+    SVM_matrix = confusion_matrix(test_labels, SVM_Model.predict(test_df))
     print("\nThe confusion matrix is:")
     print(SVM_matrix)
     print("\n\n")
 
+    sys.exit()
     # Train SVM model - polynomial kernel
 
     # Train SVM model - rbf kernel
