@@ -8,7 +8,10 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 from scipy.stats import pearsonr
+from sklearn.metrics import confusion_matrix
 from Parsing import parse_tsv
 import warnings
 
@@ -54,8 +57,23 @@ def main(train_data, test_data):
     print("Checking the vocabulary: ")
     print(tfidf_preproc.get_feature_names())
 
+    # Load true/false labels into vector y, mapped to 1, 0 for binary classification
+    binary_labels = []
+    for label in train_labels:
+        if label == 'true':
+            binary_labels.append(1)
+        elif label == 'mostly-true':
+            binary_labels.append(1)
+        elif label == 'half-true':
+            binary_labels.append(1)
+        elif label == 'barely-true':
+            binary_labels.append(0)
+        elif label == 'false':
+            binary_labels.append(0)
+        elif label == 'pants-fire':
+            binary_labels.append(0)
+
     # Load true/false labels into vector y, mapped to 1 through 6
-    # Should I do binary classification???
     numeric_labels = []
     for label in train_labels:
         if label == 'true':
@@ -73,7 +91,24 @@ def main(train_data, test_data):
 
     print(numeric_labels)
 
-    # Train an SVM model
+    # Train an SVM model - linear kernel
+    SVM_Model = LinearSVC(C=1)  # Initialize SVM
+    SVM_Model.fit(TrainDF1, Train1Labels)  # Train SVM with Training Data
+
+    # Results
+    print("SVM prediction:\n", SVM_Model.predict(TestDF1))
+    print("Actual:")
+    print(Test1Labels)
+
+    # Confusion Matrix
+    SVM_matrix = confusion_matrix(Test1Labels, SVM_Model.predict(TestDF1))
+    print("\nThe confusion matrix is:")
+    print(SVM_matrix)
+    print("\n\n")
+
+    # Train SVM model - polynomial kernel
+
+    # Train SVM model - rbf kernel
 
     # Train a multinomial NB model
 
