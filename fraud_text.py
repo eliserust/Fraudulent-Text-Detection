@@ -151,6 +151,8 @@ def main(train_data, test_data):
     train_df_binary = train_df != 0
     test_df_binary = test_df != 0
 
+    bernoulli_model = BernoulliNB()
+
     # If time: Zero Rule as a baseline
 
     # Visualizations
