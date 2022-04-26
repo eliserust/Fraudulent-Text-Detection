@@ -37,11 +37,11 @@ def preprocess_text(text):
     return " ".join(toks_nostop)
 
 # Main function
-def main(train_data, test_data):
+def main(train_data, dev_data):
 
     # Load texts and labels
     train_labels, train_texts, train_subjects, train_speakers, train_parties = parse_tsv(train_data)
-    test_labels, test_texts, test_subjects, test_speakers, test_parties = parse_tsv(test_data)
+    dev_labels, dev_texts, dev_subjects, dev_speakers, dev_parties = parse_tsv(dev_data)
 
 
     # Preprocess texts
@@ -49,7 +49,7 @@ def main(train_data, test_data):
 
     # Build TFIDF vector feature matrix and fit to training data
     vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True, min_df = 10)
-    tfidf_vector = vectorizer.fit_transform(train_texts) # Prof Liz says never to .fit_transform not sure what the workaround is
+    tfidf_vector = vectorizer.fit_transform(train_texts) # Ik we're never to .fit_transform not sure what the workaround is
     train_df = pd.DataFrame(tfidf_vector.toarray(), columns=vectorizer.get_feature_names())
     # Remove number columns??
 
@@ -60,18 +60,19 @@ def main(train_data, test_data):
     preproc_train_df = pd.DataFrame(tfidf_preproc.toarray(), columns=preproc_vectorizer.get_feature_names())
     #print(preproc_train_df)
 
-    # TFIDF vector feature matrix for test data
-    test_vector = vectorizer.fit_transform(test_texts)  # Prof Liz says never to .fit_transform not sure what the workaround is
-    test_df = pd.DataFrame(test_vector.toarray(), columns=vectorizer.get_feature_names())
+    # TFIDF vector feature matrix for dev data
+    dev_vector = vectorizer.transform(dev_texts)
+    dev_df = pd.DataFrame(dev_vector.toarray(), columns=vectorizer.get_feature_names())
 
     print(train_df)
+    print(dev_df)
     print(train_labels)
 
 
     print(f"The training data has shape {train_df.shape} and dtype {type(train_df)}")
-    print(f"The testing data has shape {test_df.shape} and dtype {type(test_df)}")
+    print(f"The testing data has shape {dev_df.shape} and dtype {type(dev_df)}")
     print(f"The training labels have shape {np.shape(train_labels)} and dtype {type(train_labels)}")
-    print(f"The testing labels has shape {np.shape(test_labels)} and dtype {type(test_labels)}")
+    print(f"The testing labels has shape {np.shape(dev_labels)} and dtype {type(dev_labels)}")
 
     # Load true/false labels into vector y, mapped to 1, 0 for binary classification
     binary_labels = []
@@ -95,23 +96,21 @@ def main(train_data, test_data):
     SVM_Model.fit(train_df, train_labels)  # Train SVM with Training Data
 
     # Results
-    print("SVM prediction:\n", SVM_Model.predict(test_df))
+    print("SVM prediction:\n", SVM_Model.predict(dev_df))
     print("Actual:")
-    print(test_labels)
-
-    # Because the train and test data are predefined, the words aren't the same across
-    # Different length TFIdf matrices --> how to solve?
-    sys.exit()
+    print(dev_labels)
 
     # RESULTS - Confusion Matrix, Accuracy/Precision/Recall/F1
-    SVM_matrix = confusion_matrix(test_labels, SVM_Model.predict(test_df))
+    SVM_matrix = confusion_matrix(dev_labels, SVM_Model.predict(dev_df))
     print("\nThe confusion matrix is:")
     print(SVM_matrix)
     print("\n\n")
-    print(accuracy_score(test_labels, SVM_Model.predict(test_df)))
-    print(precision_score(test_labels, SVM_Model.predict(test_df)))
-    print(recall_score(test_labels, SVM_Model.predict(test_df)))
-    print(f1_score(test_labels, SVM_Model.predict(test_df)))
+    print(accuracy_score(dev_labels, SVM_Model.predict(dev_df)))
+    print(precision_score(dev_labels, SVM_Model.predict(dev_df)))
+    print(recall_score(dev_labels, SVM_Model.predict(dev_df)))
+    print(f1_score(dev_labels, SVM_Model.predict(dev_df)))
+
+    sys.exit()
 
 
     # Train SVM model - polynomial kernel
