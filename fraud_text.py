@@ -43,9 +43,10 @@ def main(train_data, dev_data):
     train_labels, train_texts, train_subjects, train_speakers, train_parties = parse_tsv(train_data)
     dev_labels, dev_texts, dev_subjects, dev_speakers, dev_parties = parse_tsv(dev_data)
 
-
     # Preprocess texts
-    preproc_texts = [preprocess_text(text) for text in train_texts]
+    preproc_train_texts = [preprocess_text(text) for text in train_texts]
+    preproc_dev_texts = [preprocess_text(text) for text in dev_texts]
+
 
     # Build TFIDF vector feature matrix and fit to training data
     vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True, min_df = 10)
@@ -56,7 +57,7 @@ def main(train_data, dev_data):
     # TFIDF vector feature matrix for preprocessed data
     preproc_vectorizer = TfidfVectorizer(input = "content", lowercase = True, analyzer = "word", use_idf = True,
                                          min_df = 10, token_pattern = "\S+")
-    tfidf_preproc = preproc_vectorizer.fit_transform(preproc_texts)
+    tfidf_preproc = preproc_vectorizer.fit_transform(preproc_train_texts)
     preproc_train_df = pd.DataFrame(tfidf_preproc.toarray(), columns=preproc_vectorizer.get_feature_names())
     #print(preproc_train_df)
 
@@ -73,22 +74,6 @@ def main(train_data, dev_data):
     print(f"The testing data has shape {dev_df.shape} and dtype {type(dev_df)}")
     print(f"The training labels have shape {np.shape(train_labels)} and dtype {type(train_labels)}")
     print(f"The testing labels has shape {np.shape(dev_labels)} and dtype {type(dev_labels)}")
-
-    # Load true/false labels into vector y, mapped to 1, 0 for binary classification
-    binary_labels = []
-    for label in train_labels:
-        if label == 'true':
-            binary_labels.append(1)
-        elif label == 'mostly-true':
-            binary_labels.append(1)
-        elif label == 'half-true':
-            binary_labels.append(1)
-        elif label == 'barely-true':
-            binary_labels.append(0)
-        elif label == 'false':
-            binary_labels.append(0)
-        elif label == 'pants-fire':
-            binary_labels.append(0)
 
 
     # Train an SVM model - linear kernel
