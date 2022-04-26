@@ -90,59 +90,74 @@ def main(train_data, dev_data):
         elif label == 'pants-fire':
             binary_labels.append(0)
 
+    binary_dev_labels = []
+    for label in dev_labels:
+        if label == 'true':
+            binary_dev_labels.append(1)
+        elif label == 'mostly-true':
+            binary_dev_labels.append(1)
+        elif label == 'half-true':
+            binary_dev_labels.append(1)
+        elif label == 'barely-true':
+            binary_dev_labels.append(0)
+        elif label == 'false':
+            binary_dev_labels.append(0)
+        elif label == 'pants-fire':
+            binary_dev_labels.append(0)
+
 
     # Train an SVM model - linear kernel
     SVM_Model = LinearSVC(C = 1)  # Initialize SVM
-    SVM_Model.fit(train_df, train_labels)  # Train SVM with Training Data
+    SVM_Model.fit(train_df, binary_labels)  # Train SVM with Training Data
 
     # Results
-    print("Linear Kernel SVM prediction:\n", SVM_Model.predict(dev_df))
+    print("SVM prediction:\n", SVM_Model.predict(dev_df))
     print("Actual:")
-    print(dev_labels)
+    print(binary_dev_labels)
 
     # RESULTS - Confusion Matrix, Accuracy/Precision/Recall/F1
-    SVM_matrix = confusion_matrix(dev_labels, SVM_Model.predict(dev_df))
-    print("\nThe confusion matrix for SVM (Linear Kernel) is:")
+    SVM_matrix = confusion_matrix(binary_dev_labels, SVM_Model.predict(dev_df))
+    print("\nThe confusion matrix is:")
     print(SVM_matrix)
     print("\n\n")
-    print(accuracy_score(dev_labels, SVM_Model.predict(dev_df)))
-    print(precision_score(dev_labels, SVM_Model.predict(dev_df), average='micro'))
-    print(recall_score(dev_labels, SVM_Model.predict(dev_df), average = 'micro'))
-    print(f1_score(dev_labels, SVM_Model.predict(dev_df), average = 'micro'))
+    print(accuracy_score(binary_dev_labels, SVM_Model.predict(dev_df)))
+    print(precision_score(binary_dev_labels, SVM_Model.predict(dev_df), average='micro'))
+    print(recall_score(binary_dev_labels, SVM_Model.predict(dev_df), average = 'micro'))
+    print(f1_score(binary_dev_labels, SVM_Model.predict(dev_df), average = 'micro'))
 
 
     # Train SVM model - polynomial kernel
     SVM_poly = svm.SVC(kernel='poly', degree=3, C=1, decision_function_shape='ovo')
-    SVM_poly.fit(train_df, train_labels)
+    SVM_poly.fit(train_df, binary_labels)
 
     # Results
-    print("SVM polynomial kernel prediction:\n", SVM_poly.predict(dev_df))
+    print("SVM prediction:\n", SVM_poly.predict(dev_df))
     print("Actual:")
-    print(dev_labels)
+    print(binary_dev_labels)
 
     # Confusion Matrix
-    SVM_matrix2 = confusion_matrix(dev_labels, SVM_poly.predict(dev_df))
-    print("\nThe confusion matrix for SVM (polynomial kernel) is:")
+    SVM_matrix2 = confusion_matrix(binary_dev_labels, SVM_poly.predict(dev_df))
+    print("\nThe confusion matrix is:")
     print(SVM_matrix2)
     print("\n\n")
-    print(accuracy_score(dev_labels, SVM_poly.predict(dev_df)))
-    print(precision_score(dev_labels, SVM_poly.predict(dev_df)))
-    print(recall_score(dev_labels, SVM_poly.predict(dev_df)))
-    print(f1_score(dev_labels, SVM_poly.predict(dev_df)))
+    print(accuracy_score(binary_dev_labels, SVM_poly.predict(dev_df)))
+    print(precision_score(binary_dev_labels, SVM_poly.predict(dev_df)))
+    print(recall_score(binary_dev_labels, SVM_poly.predict(dev_df)))
+    print(f1_score(binary_dev_labels, SVM_poly.predict(dev_df)))
 
 
     # Train a multinomial NB model
     NB_Model = MultinomialNB()
-    NB_Model.fit(train_df, train_labels)
+    NB_Model.fit(train_df, binary_labels)
     # Confusion Matrix
-    NB_CM = confusion_matrix(dev_labels, NB_Model.predict(dev_df))
-    print("\nThe confusion matrix for Multinomial NB is:")
+    NB_CM = confusion_matrix(binary_dev_labels, NB_Model.predict(dev_df))
+    print("\nThe confusion matrix is:")
     print(NB_CM)
     print("\n\n")
-    print(accuracy_score(dev_labels, NB_Model.predict(dev_df)))
-    print(precision_score(dev_labels, NB_Model.predict(dev_df)))
-    print(recall_score(dev_labels, NB_Model.predict(dev_df)))
-    print(f1_score(dev_labels, NB_Model.predict(dev_df)))
+    print(accuracy_score(binary_dev_labels, NB_Model.predict(dev_df)))
+    print(precision_score(binary_dev_labels, NB_Model.predict(dev_df)))
+    print(recall_score(binary_dev_labels, NB_Model.predict(dev_df)))
+    print(f1_score(binary_dev_labels, NB_Model.predict(dev_df)))
 
     sys.exit()
 
