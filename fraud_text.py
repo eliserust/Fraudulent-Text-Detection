@@ -16,6 +16,9 @@ from sklearn import tree # New package
 from matplotlib import pyplot as plt
 from sklearn.pipeline import FeatureUnion
 from sklearn.pipeline import Pipeline
+import seaborn as sn
+import matplotlib.pyplot as plt
+
 
 warnings.filterwarnings("ignore") # ignore warnings
 

@@ -76,7 +76,7 @@ def main(train_data, dev_data):
     print(f"The testing labels has shape {np.shape(dev_labels)} and dtype {type(dev_labels)}")
 
 
-    # Train an SVM model - linear kernel
+    #### SVM model - linear kernel
     SVM_Model = LinearSVC(C = 1)  # Initialize SVM
     SVM_Model.fit(preproc_train_df, train_labels)  # Train SVM with Training Data
 
@@ -96,7 +96,7 @@ def main(train_data, dev_data):
     print(f1_score(dev_labels, SVM_Model.predict(preproc_dev_df), average = 'macro'))
 
 
-    # Train SVM model - polynomial kernel
+    #### SVM model - polynomial kernel
     SVM_poly = svm.SVC(kernel='poly', degree=3, C=1, decision_function_shape='ovo')
     SVM_poly.fit(preproc_train_df, train_labels)
 
@@ -116,7 +116,7 @@ def main(train_data, dev_data):
     print(f1_score(dev_labels, SVM_poly.predict(preproc_dev_df), average='macro'))
 
 
-    # Train a multinomial NB model
+    #### Multinomial NB model
     NB_Model = MultinomialNB()
     NB_Model.fit(preproc_train_df, train_labels)
     # Confusion Matrix
@@ -129,7 +129,7 @@ def main(train_data, dev_data):
     print(recall_score(dev_labels, NB_Model.predict(preproc_dev_df), average = 'macro'))
     print(f1_score(dev_labels, NB_Model.predict(preproc_dev_df), average = 'macro'))
 
-    # Decision Tree
+    #### Decision Tree
     DT_Model = tree.DecisionTreeClassifier(criterion='entropy',
                                            splitter='best',
                                            max_depth=10,
@@ -146,7 +146,7 @@ def main(train_data, dev_data):
     print(recall_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
     print(f1_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
 
-    # Visualizations
+    #### Visualizations
     topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
     cm = pd.DataFrame(DT_CM, index=[i for i in topics],
                       columns=[i for i in topics])
