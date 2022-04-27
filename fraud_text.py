@@ -4,7 +4,7 @@ import pandas as pd
 import string
 import warnings
 import sys
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from scipy.stats import pearsonr
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score
@@ -14,8 +14,6 @@ from sklearn.svm import SVC # New package
 from sklearn import svm, datasets # New package
 from sklearn import tree # New package
 from matplotlib import pyplot as plt
-from sklearn.pipeline import FeatureUnion
-from sklearn.pipeline import Pipeline
 import seaborn as sn
 import matplotlib.pyplot as plt
 
@@ -38,15 +36,22 @@ def main(train_data, dev_data):
     dev_vector = vectorizer.transform(dev_texts)
     dev_df = pd.DataFrame(dev_vector.toarray(), columns=vectorizer.get_feature_names())
 
-    # Add other data to df
-    pipe = Pipeline([('tfidf', vectorizer, train_texts),
-                     ('classify', train_subjects),
-                     ('classify', train_speakers),
-                     ('classify', train_parties)])
+    #### Add in External Data (speakers, subjects, parties) to both train and dev
+    count_vec = CountVectorizer(analyzer=lambda x: x)
+    train_speakers_vec = count_vec.fit_transform(train_speakers).toarray()
+    train_subjects_vec = count_vec.transform(train_subjects).toarray()
+    train_parties_vec = count_vec.transform(train_parties).toarray()
+    dev_speakers_vec = count_vec.transform(dev_speakers).toarray()
+    dev_subjects_vec = count_vec.transform(dev_subjects).toarray()
+    dev_parties_vec = count_vec.transform(dev_parties).toarray()
 
-    print(train_df)
-    print(dev_df)
-    print(train_labels)
+    # Concatenate one-hot vectors to training data, then to dev data
+    # train_df = pd.concat([train_df, pd.DataFrame(train_speakers_vec)], axis = 1)
+    # train_df = pd.concat([train_df, pd.DataFrame(train_subjects_vec)], axis=1)
+    # train_df = pd.concat([train_df, pd.DataFrame(train_parties_vec)], axis=1)
+    # dev_df = pd.concat([dev_df, pd.DataFrame(dev_speakers_vec)], axis = 1)
+    # dev_df = pd.concat([dev_df, pd.DataFrame(dev_subjects_vec)], axis=1)
+    # dev_df = pd.concat([dev_df, pd.DataFrame(dev_parties_vec)], axis=1)
 
 
     print(f"The training data has shape {train_df.shape} and dtype {type(train_df)}")
