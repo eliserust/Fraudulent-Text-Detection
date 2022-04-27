@@ -13,7 +13,7 @@ from sklearn.svm import LinearSVC # New package
 from sklearn.svm import SVC # New package
 from sklearn import svm, datasets # New package
 from sklearn import tree # New package
-import graphviz
+from matplotlib import pyplot as plt
 
 warnings.filterwarnings("ignore") # ignore warnings
 
@@ -61,19 +61,6 @@ def main(train_data, dev_data):
     print(recall_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
     print(f1_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
 
-    tree.plot_tree(DT_Model)
-    topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
-    feature_names = train_df.columns
-    Tree_Object = tree.export_graphviz(DT_Model, out_file=None,
-                                       feature_names=feature_names,
-                                       class_names=topics,
-                                       filled=True, rounded=True,
-                                       special_characters=True)
-
-    graph = graphviz.Source(Tree_Object)
-    graph.render("MyTree_entropy_small")
-
-    sys.exit()
 
     # Train an SVM model - linear kernel
     SVM_Model = LinearSVC(C=1)  # Initialize SVM
@@ -127,6 +114,13 @@ def main(train_data, dev_data):
     print(f1_score(dev_labels, NB_Model.predict(dev_df), average='macro'))
 
     # Visualizations
+    topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
+    feature_names = train_df.columns
+    fig = plt.figure(figsize=(25, 20))
+    _ = tree.plot_tree(DT_Model, feature_names=feature_names,
+                       class_names=topics,
+                       filled=True)
+    fig.savefig("decision_tree.png")
 
 
 if __name__ == '__main__':
