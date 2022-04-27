@@ -9,6 +9,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from scipy.stats import pearsonr
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score
@@ -68,6 +69,17 @@ def main(train_data, dev_data):
     print(preproc_train_df)
     print(preproc_dev_df)
     print(train_labels)
+
+    #### Add in External Data (speakers, subjects, parties)
+    count_vec = CountVectorizer(analyzer = lambda x: x)
+    speakers = count_vec.fit_transform(train_speakers).toarray()
+    subjects = count_vec.transform(train_subjects).toarray()
+    parties = count_vec.transform(train_parties).toarray()
+
+    # Concatenate one-hot vectors to training data
+    preproc_train_df = pd.concat([preproc_train_df, pd.DataFrame(speakers)], axis = 1)
+    preproc_train_df = pd.concat([preproc_train_df, pd.DataFrame(subjects)], axis=1)
+    preproc_train_df = pd.concat([preproc_train_df, pd.DataFrame(parties)], axis=1)
 
 
     print(f"The training data has shape {preproc_train_df.shape} and dtype {type(preproc_train_df)}")
