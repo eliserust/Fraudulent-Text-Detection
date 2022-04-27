@@ -16,6 +16,7 @@ from Parsing import parse_tsv
 from sklearn.svm import LinearSVC # New package
 from sklearn.svm import SVC # New package
 from sklearn import svm, datasets # New package
+from sklearn import tree # New package
 
 warnings.filterwarnings("ignore") # ignore warnings
 
@@ -60,15 +61,15 @@ def main(train_data, dev_data):
 
     # TFIDF vector feature matrix for dev data
     dev_vector = preproc_vectorizer.transform(dev_texts)
-    dev_df = pd.DataFrame(dev_vector.toarray(), columns=preproc_vectorizer.get_feature_names())
+    preproc_dev_df = pd.DataFrame(dev_vector.toarray(), columns=preproc_vectorizer.get_feature_names())
 
     print(preproc_train_df)
-    print(dev_df)
+    print(preproc_dev_df)
     print(train_labels)
 
 
     print(f"The training data has shape {preproc_train_df.shape} and dtype {type(preproc_train_df)}")
-    print(f"The testing data has shape {dev_df.shape} and dtype {type(dev_df)}")
+    print(f"The testing data has shape {preproc_dev_df.shape} and dtype {type(preproc_dev_df)}")
     print(f"The training labels have shape {np.shape(train_labels)} and dtype {type(train_labels)}")
     print(f"The testing labels has shape {np.shape(dev_labels)} and dtype {type(dev_labels)}")
 
@@ -78,19 +79,19 @@ def main(train_data, dev_data):
     SVM_Model.fit(preproc_train_df, train_labels)  # Train SVM with Training Data
 
     # Results
-    print("Linear Kernel SVM prediction:\n", SVM_Model.predict(dev_df))
+    print("Linear Kernel SVM prediction:\n", SVM_Model.predict(preproc_dev_df))
     print("Actual:")
     print(dev_labels)
 
     # RESULTS - Confusion Matrix, Accuracy/Precision/Recall/F1
-    SVM_matrix = confusion_matrix(dev_labels, SVM_Model.predict(dev_df))
+    SVM_matrix = confusion_matrix(dev_labels, SVM_Model.predict(preproc_dev_df))
     print("\nThe confusion matrix for SVM (Linear Kernel) is:")
     print(SVM_matrix)
     print("\n\n")
-    print(accuracy_score(dev_labels, SVM_Model.predict(dev_df)))
-    print(precision_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
-    print(recall_score(dev_labels, SVM_Model.predict(dev_df), average = 'macro'))
-    print(f1_score(dev_labels, SVM_Model.predict(dev_df), average = 'macro'))
+    print(accuracy_score(dev_labels, SVM_Model.predict(preproc_dev_df)))
+    print(precision_score(dev_labels, SVM_Model.predict(preproc_dev_df), average='macro'))
+    print(recall_score(dev_labels, SVM_Model.predict(preproc_dev_df), average = 'macro'))
+    print(f1_score(dev_labels, SVM_Model.predict(preproc_dev_df), average = 'macro'))
 
 
     # Train SVM model - polynomial kernel
@@ -98,35 +99,33 @@ def main(train_data, dev_data):
     SVM_poly.fit(preproc_train_df, train_labels)
 
     # Results
-    print("SVM polynomial kernel prediction:\n", SVM_poly.predict(dev_df))
+    print("SVM polynomial kernel prediction:\n", SVM_poly.predict(preproc_dev_df))
     print("Actual:")
     print(dev_labels)
 
     # Confusion Matrix
-    SVM_matrix2 = confusion_matrix(dev_labels, SVM_poly.predict(dev_df))
+    SVM_matrix2 = confusion_matrix(dev_labels, SVM_poly.predict(preproc_dev_df))
     print("\nThe confusion matrix for SVM (polynomial kernel) is:")
     print(SVM_matrix2)
     print("\n\n")
-    print(accuracy_score(dev_labels, SVM_poly.predict(dev_df)))
-    print(precision_score(dev_labels, SVM_poly.predict(dev_df), average='macro'))
-    print(recall_score(dev_labels, SVM_poly.predict(dev_df), average='macro'))
-    print(f1_score(dev_labels, SVM_poly.predict(dev_df), average='macro'))
+    print(accuracy_score(dev_labels, SVM_poly.predict(preproc_dev_df)))
+    print(precision_score(dev_labels, SVM_poly.predict(preproc_dev_df), average='macro'))
+    print(recall_score(dev_labels, SVM_poly.predict(preproc_dev_df), average='macro'))
+    print(f1_score(dev_labels, SVM_poly.predict(preproc_dev_df), average='macro'))
 
 
     # Train a multinomial NB model
     NB_Model = MultinomialNB()
     NB_Model.fit(preproc_train_df, train_labels)
     # Confusion Matrix
-    NB_CM = confusion_matrix(dev_labels, NB_Model.predict(dev_df))
+    NB_CM = confusion_matrix(dev_labels, NB_Model.predict(preproc_dev_df))
     print("\nThe confusion matrix for Multinomial NB is:")
     print(NB_CM)
     print("\n\n")
-    print(accuracy_score(dev_labels, NB_Model.predict(dev_df)))
-    print(precision_score(dev_labels, NB_Model.predict(dev_df), average = 'macro'))
-    print(recall_score(dev_labels, NB_Model.predict(dev_df), average = 'macro'))
-    print(f1_score(dev_labels, NB_Model.predict(dev_df), average = 'macro'))
-
-    sys.exit()
+    print(accuracy_score(dev_labels, NB_Model.predict(preproc_dev_df)))
+    print(precision_score(dev_labels, NB_Model.predict(preproc_dev_df), average = 'macro'))
+    print(recall_score(dev_labels, NB_Model.predict(preproc_dev_df), average = 'macro'))
+    print(f1_score(dev_labels, NB_Model.predict(preproc_dev_df), average = 'macro'))
 
     # Decision Tree
     DT_Model = tree.DecisionTreeClassifier(criterion='entropy',
@@ -140,10 +139,10 @@ def main(train_data, dev_data):
     print("\nThe confusion matrix for Decision Tree is:")
     print(DT_CM)
     print("\n\n")
-    print(accuracy_score(dev_labels, DT_Model.predict(dev_df)))
-    print(precision_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
-    print(recall_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
-    print(f1_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
+    print(accuracy_score(dev_labels, DT_Model.predict(preproc_dev_df)))
+    print(precision_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
+    print(recall_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
+    print(f1_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
 
     # Visualizations
 

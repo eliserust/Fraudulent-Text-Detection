@@ -15,6 +15,7 @@ from sklearn import svm, datasets # New package
 from sklearn import tree # New package
 from matplotlib import pyplot as plt
 from sklearn.pipeline import FeatureUnion
+from sklearn.pipeline import Pipeline
 
 warnings.filterwarnings("ignore") # ignore warnings
 
@@ -35,9 +36,10 @@ def main(train_data, dev_data):
     dev_df = pd.DataFrame(dev_vector.toarray(), columns=vectorizer.get_feature_names())
 
     # Add other data to df
-    subjects_vec = vectorizer.transform(train_subjects)
-    speaker_vec = vectorizer.transform(train_speakers)
-    parties_vec = vectorizer.transform(train_parties)
+    pipe = Pipeline([('tfidf', vectorizer, train_texts),
+                     ('classify', train_subjects),
+                     ('classify', train_speakers),
+                     ('classify', train_parties)])
 
     print(train_df)
     print(dev_df)
