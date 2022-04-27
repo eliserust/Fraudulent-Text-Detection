@@ -14,6 +14,7 @@ from sklearn.svm import SVC # New package
 from sklearn import svm, datasets # New package
 from sklearn import tree # New package
 from matplotlib import pyplot as plt
+from sklearn.pipeline import FeatureUnion
 
 warnings.filterwarnings("ignore") # ignore warnings
 
@@ -33,6 +34,11 @@ def main(train_data, dev_data):
     dev_vector = vectorizer.transform(dev_texts)
     dev_df = pd.DataFrame(dev_vector.toarray(), columns=vectorizer.get_feature_names())
 
+    # Add other data to df
+    subjects_vec = vectorizer.transform(train_subjects)
+    speaker_vec = vectorizer.transform(train_speakers)
+    parties_vec = vectorizer.transform(train_parties)
+
     print(train_df)
     print(dev_df)
     print(train_labels)
@@ -51,6 +57,8 @@ def main(train_data, dev_data):
                                            min_samples_split = 2,
                                            min_samples_leaf = 1)
     DT_Model.fit(train_df, train_labels)
+    DT_Model.predict(dev_df)
+
     # Confusion Matrix
     DT_CM = confusion_matrix(dev_labels, DT_Model.predict(dev_df))
     print("\nThe confusion matrix for Decision Tree is:")
@@ -80,6 +88,7 @@ def main(train_data, dev_data):
     print(precision_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
     print(recall_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
     print(f1_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
+
 
     # Train SVM model - polynomial kernel
     SVM_poly = svm.SVC(kernel='poly', degree=3, C=1, decision_function_shape='ovo')
@@ -116,11 +125,7 @@ def main(train_data, dev_data):
     # Visualizations
     topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
     feature_names = train_df.columns
-    fig = plt.figure(figsize=(25, 20))
-    _ = tree.plot_tree(DT_Model, feature_names=feature_names,
-                       class_names=topics,
-                       filled=True)
-    fig.savefig("decision_tree.png")
+
 
 
 if __name__ == '__main__':

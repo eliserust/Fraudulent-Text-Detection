@@ -128,14 +128,22 @@ def main(train_data, dev_data):
 
     sys.exit()
 
-    # Train a Bernoulli NB model
-    # Need to convert to binary Xtrain and Xtest first
-    train_df_binary = train_df != 0
-    test_df_binary = test_df != 0
-
-    bernoulli_model = BernoulliNB()
-
-    # If time: Zero Rule as a baseline
+    # Decision Tree
+    DT_Model = tree.DecisionTreeClassifier(criterion='entropy',
+                                           splitter='best',
+                                           max_depth=10,
+                                           min_samples_split=2,
+                                           min_samples_leaf=1)
+    DT_Model.fit(preproc_train_df, train_labels)
+    # Confusion Matrix
+    DT_CM = confusion_matrix(dev_labels, DT_Model.predict(preproc_dev_df))
+    print("\nThe confusion matrix for Decision Tree is:")
+    print(DT_CM)
+    print("\n\n")
+    print(accuracy_score(dev_labels, DT_Model.predict(dev_df)))
+    print(precision_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
+    print(recall_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
+    print(f1_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
 
     # Visualizations
 
