@@ -36,23 +36,6 @@ def main(train_data, dev_data):
     dev_vector = vectorizer.transform(dev_texts)
     dev_df = pd.DataFrame(dev_vector.toarray(), columns=vectorizer.get_feature_names())
 
-    #### Add in External Data (speakers, subjects, parties) to both train and dev
-    count_vec = CountVectorizer(analyzer=lambda x: x)
-    train_speakers_vec = count_vec.fit_transform(train_speakers).toarray()
-    train_subjects_vec = count_vec.transform(train_subjects).toarray()
-    train_parties_vec = count_vec.transform(train_parties).toarray()
-    dev_speakers_vec = count_vec.transform(dev_speakers).toarray()
-    dev_subjects_vec = count_vec.transform(dev_subjects).toarray()
-    dev_parties_vec = count_vec.transform(dev_parties).toarray()
-
-    # Concatenate one-hot vectors to training data, then to dev data
-    # train_df = pd.concat([train_df, pd.DataFrame(train_speakers_vec)], axis = 1)
-    # train_df = pd.concat([train_df, pd.DataFrame(train_subjects_vec)], axis=1)
-    # train_df = pd.concat([train_df, pd.DataFrame(train_parties_vec)], axis=1)
-    # dev_df = pd.concat([dev_df, pd.DataFrame(dev_speakers_vec)], axis = 1)
-    # dev_df = pd.concat([dev_df, pd.DataFrame(dev_subjects_vec)], axis=1)
-    # dev_df = pd.concat([dev_df, pd.DataFrame(dev_parties_vec)], axis=1)
-
 
     print(f"The training data has shape {train_df.shape} and dtype {type(train_df)}")
     print(f"The testing data has shape {dev_df.shape} and dtype {type(dev_df)}")
@@ -142,7 +125,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='FraudulentTextDetection_Final')
     parser.add_argument('--train', type=str, default="liar_dataset/train.tsv",
                         help='path to training set')
-    parser.add_argument('--dev', type=str, default="liar_dataset/valid.tsv",
+    parser.add_argument('--dev', type=str, default="liar_dataset/test.tsv",
                         help='path to dev set')
     #parser.add_argument('--seed', type=int, default=7,
     #                    help='random seed for dataset split')
