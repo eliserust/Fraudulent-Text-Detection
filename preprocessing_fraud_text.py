@@ -17,6 +17,8 @@ from sklearn.svm import LinearSVC # New package
 from sklearn.svm import SVC # New package
 from sklearn import svm, datasets # New package
 from sklearn import tree # New package
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore") # ignore warnings
 
@@ -145,6 +147,13 @@ def main(train_data, dev_data):
     print(f1_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
 
     # Visualizations
+    topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
+    cm = pd.DataFrame(DT_CM, index=[i for i in topics],
+                      columns=[i for i in topics])
+    plt.figure(figsize=(10, 7))
+    svm = sn.heatmap(cm, annot=True, cmap="Blues")
+    figure = svm.get_figure()
+    figure.savefig('svm_conf.png', dpi=400)
 
 
 if __name__ == '__main__':
