@@ -4,10 +4,6 @@ import pandas as pd
 import string
 import warnings
 import sys
-from sklearn.model_selection import train_test_split
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from scipy.stats import pearsonr
@@ -16,6 +12,8 @@ from Parsing import parse_tsv
 from sklearn.svm import LinearSVC # New package
 from sklearn.svm import SVC # New package
 from sklearn import svm, datasets # New package
+from sklearn import tree # New package
+import graphviz
 
 warnings.filterwarnings("ignore") # ignore warnings
 
@@ -46,8 +44,39 @@ def main(train_data, dev_data):
     print(f"The testing labels has shape {np.shape(dev_labels)} and dtype {type(dev_labels)}")
 
 
+    # Decision Tree
+    DT_Model = tree.DecisionTreeClassifier(criterion = 'entropy',
+                                           splitter = 'best',
+                                           max_depth = 10,
+                                           min_samples_split = 2,
+                                           min_samples_leaf = 1)
+    DT_Model.fit(train_df, train_labels)
+    # Confusion Matrix
+    DT_CM = confusion_matrix(dev_labels, DT_Model.predict(dev_df))
+    print("\nThe confusion matrix for Decision Tree is:")
+    print(DT_CM)
+    print("\n\n")
+    print(accuracy_score(dev_labels, DT_Model.predict(dev_df)))
+    print(precision_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
+    print(recall_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
+    print(f1_score(dev_labels, DT_Model.predict(dev_df), average='macro'))
+
+    tree.plot_tree(DT_Model)
+    topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
+    feature_names = train_df.columns
+    Tree_Object = tree.export_graphviz(DT_Model, out_file=None,
+                                       feature_names=feature_names,
+                                       class_names=topics,
+                                       filled=True, rounded=True,
+                                       special_characters=True)
+
+    graph = graphviz.Source(Tree_Object)
+    graph.render("MyTree_entropy_small")
+
+    sys.exit()
+
     # Train an SVM model - linear kernel
-    SVM_Model = LinearSVC(C = 1)  # Initialize SVM
+    SVM_Model = LinearSVC(C=1)  # Initialize SVM
     SVM_Model.fit(train_df, train_labels)  # Train SVM with Training Data
 
     # Results
@@ -62,9 +91,8 @@ def main(train_data, dev_data):
     print("\n\n")
     print(accuracy_score(dev_labels, SVM_Model.predict(dev_df)))
     print(precision_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
-    print(recall_score(dev_labels, SVM_Model.predict(dev_df), average = 'macro'))
-    print(f1_score(dev_labels, SVM_Model.predict(dev_df), average = 'macro'))
-
+    print(recall_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
+    print(f1_score(dev_labels, SVM_Model.predict(dev_df), average='macro'))
 
     # Train SVM model - polynomial kernel
     SVM_poly = svm.SVC(kernel='poly', degree=3, C=1, decision_function_shape='ovo')
@@ -85,7 +113,6 @@ def main(train_data, dev_data):
     print(recall_score(dev_labels, SVM_poly.predict(dev_df), average='macro'))
     print(f1_score(dev_labels, SVM_poly.predict(dev_df), average='macro'))
 
-
     # Train a multinomial NB model
     NB_Model = MultinomialNB()
     NB_Model.fit(train_df, train_labels)
@@ -95,20 +122,9 @@ def main(train_data, dev_data):
     print(NB_CM)
     print("\n\n")
     print(accuracy_score(dev_labels, NB_Model.predict(dev_df)))
-    print(precision_score(dev_labels, NB_Model.predict(dev_df), average = 'macro'))
-    print(recall_score(dev_labels, NB_Model.predict(dev_df), average = 'macro'))
-    print(f1_score(dev_labels, NB_Model.predict(dev_df), average = 'macro'))
-
-    sys.exit()
-
-    # Train a Bernoulli NB model
-    # Need to convert to binary Xtrain and Xtest first
-    train_df_binary = train_df != 0
-    test_df_binary = test_df != 0
-
-    bernoulli_model = BernoulliNB()
-
-    # If time: Zero Rule as a baseline
+    print(precision_score(dev_labels, NB_Model.predict(dev_df), average='macro'))
+    print(recall_score(dev_labels, NB_Model.predict(dev_df), average='macro'))
+    print(f1_score(dev_labels, NB_Model.predict(dev_df), average='macro'))
 
     # Visualizations
 
