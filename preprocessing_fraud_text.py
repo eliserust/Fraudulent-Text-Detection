@@ -70,7 +70,7 @@ def main(train_data, dev_data):
     print(train_labels)
 
     #### Add in External Data (speakers, subjects, parties) to both train and dev
-    count_vec = CountVectorizer(analyzer = lambda x: x)
+    count_vec = CountVectorizer()
     train_speakers_vec = count_vec.fit_transform(train_speakers).toarray()
     train_subjects_vec = count_vec.transform(train_subjects).toarray()
     train_parties_vec = count_vec.transform(train_parties).toarray()
