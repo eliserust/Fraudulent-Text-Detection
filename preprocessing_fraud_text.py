@@ -48,6 +48,7 @@ def main(train_data, dev_data):
     # Load texts and labels
     train_labels, train_texts, train_subjects, train_speakers, train_parties = parse_tsv(train_data)
     dev_labels, dev_texts, dev_subjects, dev_speakers, dev_parties = parse_tsv(dev_data)
+    topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
 
     # Preprocess texts
     preproc_train_texts = [preprocess_text(text) for text in train_texts]
@@ -122,7 +123,7 @@ def main(train_data, dev_data):
     print(dev_labels)
 
     # Confusion Matrix
-    SVM_matrix2 = confusion_matrix(dev_labels, SVM_poly.predict(preproc_dev_df))
+    SVM_matrix2 = confusion_matrix(dev_labels, SVM_poly.predict(preproc_dev_df), labels = topics)
     print("\nThe confusion matrix for SVM (polynomial kernel) is:")
     print(SVM_matrix2)
     print("\n\n")
@@ -163,8 +164,7 @@ def main(train_data, dev_data):
     print(f1_score(dev_labels, DT_Model.predict(preproc_dev_df), average='macro'))
 
     #### Visualizations
-    topics = ['true', 'half-true', 'mostly-true', 'barely-true', 'false', 'pants-fire']
-    cm = pd.DataFrame(DT_CM, index=[i for i in topics],
+    cm = pd.DataFrame(SVM_matrix2, index=[i for i in topics],
                       columns=[i for i in topics])
     plt.figure(figsize=(10, 7))
     svm = sn.heatmap(cm, annot=True, cmap="Blues")
