@@ -79,7 +79,6 @@ def main(train_data):
     top_texts = speakers_df.iloc[:, indices]
     text_features = top_texts.columns.values.tolist()
     print(text_features)
-    print(top_texts)
 
     # Parties
     parties_mi_score = MIC(parties_df, train_labels)
@@ -87,7 +86,6 @@ def main(train_data):
     top_texts = parties_df.iloc[:, indices]
     text_features = top_texts.columns.values.tolist()
     print(text_features)
-    print(top_texts)
 
     # Text
     text_mi_score = MIC(preproc_train_df, train_labels)
@@ -95,7 +93,6 @@ def main(train_data):
     top_texts = preproc_train_df.iloc[:, indices]
     text_features = top_texts.columns.values.tolist()
     print(text_features)
-    print(top_texts)
 
     # Subjects
     subjects_mi_score = MIC(subjects_df, train_labels)
@@ -103,7 +100,6 @@ def main(train_data):
     top_texts = subjects_df.iloc[:, indices]
     text_features = top_texts.columns.values.tolist()
     print(text_features)
-    print(top_texts)
 
 
 if __name__ == '__main__':
