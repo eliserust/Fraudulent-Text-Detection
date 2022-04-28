@@ -101,6 +101,12 @@ def main(train_data):
     text_features = top_texts.columns.values.tolist()
     print(text_features)
 
+    # Print highest MIC scores for each
+    print(np.sort(-text_mi_score))
+    print(np.sort(-subjects_mi_score))
+    print(np.sort(-speakers_mi_score))
+    print(np.sort(-parties_mi_score))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='FraudulentTextDetection_Final')
